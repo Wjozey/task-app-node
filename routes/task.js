@@ -29,5 +29,51 @@ router.post('/', async(req,res) => {
     }
 })
 
+async function getTask(req, res, next){
+    let task;
+    try{
+        task = await Task.findById(req.params.id)
+        if(task == null){
+            return res.status(404).json({message: 'Task not found'})
+        }
+    }
+    catch(err){
+        return res.status(500).json({message: err.message})
+    }
+    res.task = task;
+    next()
+}
 // Task by ID
-router.get('/:id', )
+router.get('/:id', getTask, (req, res)=> {
+    res.json(res.task)
+})
+
+
+//Update
+router.patch('/:id', getTask, async(req,res)=> {
+    if(req.body.title != null){
+        res.task.title = req.body.title;
+    }
+    if(req.body.description != null){
+        res.task.description = req.body.description
+    }
+    try{
+        const updateTask = await res.task.save();
+        res.json(updateTask)
+    }catch(err){
+        res.status(400).json({message:err.message})
+    }
+})
+
+// Delete task
+
+router.delete('/:id', getTask, async(req, res)=> {
+    try{
+        await res.task.deleteOne();
+        res.json({message: "task deleted"})
+    }catch(err){
+        res.status(500).json({message:err.message})
+    }
+})
+
+module.exports = router
