@@ -1,6 +1,5 @@
 # task-app-node
 
-# Backend API for Tasks
 
 A simple RESTful API built with Node.js, Express, and MongoDB.
 
